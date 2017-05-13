@@ -8,4 +8,4 @@
 
 - numpy 
 
-[paper]: https:github.com/lovit/KR-WordRank/tree/master/reference/2014_JKIIE_KimETAL_KR-WordRank.pdf
+[paper]: https://github.com/lovit/KR-WordRank/raw/master/reference/2014_JKIIE_KimETAL_KR-WordRank.pdf
