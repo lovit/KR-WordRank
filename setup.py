@@ -12,5 +12,6 @@ setup(
    description="KR-WordRank: Korean Unsupervised Word/Keyword Extractor",
    long_description=readme,
    install_requires=["numpy"],
+   keywords = ['Korean word keyword extraction'],
    packages=['kr_wordrank']
 )
