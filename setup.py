@@ -1,5 +1,5 @@
 from description import __version__, __author__
-from setuptools import setup
+from setuptools import setup, find_packages
 
 readme = 'It extracts Korean words and keywords in documents without any linguistical knowloedge.'
 
@@ -13,5 +13,5 @@ setup(
    long_description=readme,
    install_requires=["numpy>=1.12.1"],
    keywords = ['Korean word keyword extraction'],
-   packages=['krwordrank']
+   packages=find_packages()
 )

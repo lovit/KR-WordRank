@@ -1,5 +1,5 @@
-__title__ = 'KR-WordRank'
-__version__ = '0.1.1'
+__title__ = 'KRWordRank'
+__version__ = '0.1.12'
 __author__ = 'Lovit'
 __license__ = 'GPL v3'
 __copyright__ = 'Copyright 2017 Lovit'
