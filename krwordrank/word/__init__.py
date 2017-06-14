@@ -1,1 +1,1 @@
-from ._word import KR_WordRank
+from ._word import KRWordRank

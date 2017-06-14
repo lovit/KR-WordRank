@@ -4,7 +4,7 @@ import sys
 
 import numpy as np
 
-class KR_WordRank:
+class KRWordRank:
     """Unsupervised Korean Keyword Extractor
 
     Implementation of Kim, H. J., Cho, S., & Kang, P. (2014). KR-WordRank: 
