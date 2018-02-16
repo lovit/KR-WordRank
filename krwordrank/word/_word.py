@@ -144,8 +144,10 @@ class KRWordRank:
         
         for num_iter in range(1, max_iter + 1):
             rank = self._update(rank, graph, bias, dw, beta)
-            print('\riter = %d' % num_iter, end='', flush=True)
-        print('\rdone')
+            if self.verbose:
+                print('\riter = %d' % num_iter, end='', flush=True)
+        if self.verbose:
+            print('\rdone')
         
         return rank, graph
             
