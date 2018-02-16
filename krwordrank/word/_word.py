@@ -1,6 +1,5 @@
 from collections import defaultdict
 import math
-import sys
 
 import numpy as np
 
@@ -11,16 +10,17 @@ class KRWordRank:
     An Unsupervised Korean Word Extraction Method Based on WordRank. 
     Journal of Korean Institute of Industrial Engineers, 40(1), 18-33.
     """
-    def __init__(self, min_count=5, max_length=10):
+    def __init__(self, min_count=5, max_length=10, verbose=False):
         self.min_count = min_count
         self.max_length = max_length
+        self.verbose = verbose
         self.sum_weight = 1
         self.vocabulary = {}
         self.index2vocab = []
 
-    def scan_vocabs(self, docs, verbose=True):
+    def scan_vocabs(self, docs):
         self.vocabulary = {}
-        if verbose:
+        if self.verbose:
             print('scan vocabs ... ')
         
         counter = {}        
@@ -45,7 +45,7 @@ class KRWordRank:
             
         self._build_index2vocab()
         
-        if verbose:
+        if self.verbose:
             print('num vocabs = %d' % len(counter))        
         return counter
     
@@ -53,8 +53,8 @@ class KRWordRank:
         self.index2vocab = [vocab for vocab, index in sorted(self.vocabulary.items(), key=lambda x:x[1])]
         self.sum_weight = len(self.index2vocab)
     
-    def extract(self, docs, beta=0.85, max_iter=10, verbose=True, vocabulary=None, bias=None, rset=None):
-        rank, graph = self.train(docs, beta, max_iter, verbose, vocabulary, bias)
+    def extract(self, docs, beta=0.85, max_iter=10, vocabulary=None, bias=None, rset=None):
+        rank, graph = self.train(docs, beta, max_iter, vocabulary, bias)
         
         lset = {self.int2token(idx)[0]:r for idx, r in rank.items() if self.int2token(idx)[1] == 'L'}
         if not rset:
@@ -127,9 +127,9 @@ class KRWordRank:
 
         return keywords_
     
-    def train(self, docs, beta=0.85, max_iter=10, verbose=True, vocabulary=None, bias=None):
+    def train(self, docs, beta=0.85, max_iter=10, vocabulary=None, bias=None):
         if (not vocabulary) and (not self.vocabulary):
-            self.scan_vocabs(docs, verbose)
+            self.scan_vocabs(docs)
         elif (not vocabulary):
             self.vocabulary = vocabulary
             self._build_index2vocab()
@@ -144,7 +144,7 @@ class KRWordRank:
         
         for num_iter in range(1, max_iter + 1):
             rank = self._update(rank, graph, bias, dw, beta)
-            sys.stdout.write('\riter = %d' % num_iter)
+            print('\riter = %d' % num_iter, end='', flush=True)
         print('\rdone')
         
         return rank, graph
