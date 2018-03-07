@@ -158,6 +158,7 @@ class KRWordRank:
                 sum_ = sum(to_dict.values())
                 for to_, w in to_dict.items():
                     graph_[to_][from_] = w / sum_
+            graph_ = {t:dict(fd) for t, fd in graph_.items()}
             return graph_
 
         graph = defaultdict(lambda: defaultdict(lambda: 0))
@@ -185,6 +186,7 @@ class KRWordRank:
                 graph[l_node][r_node] += 1
                 graph[r_node][l_node] += 1
 
+        # reverse for inbound graph. but it normalized with sum of outbound weight
         graph = normalize(graph)
         return graph
 
