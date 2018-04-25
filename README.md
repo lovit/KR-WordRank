@@ -32,6 +32,33 @@ Graph ranking 이 높은 노드들(substrings)이 후처리 과정을 거쳐 단
 	      정말:	37.2504
 	            ....
 
+Python 의 wordcloud package 를 이용하면 키워드에 관한 word cloud figure 를 그릴 수 있습니다.
+
+Figure 에 나타내지 않을 일반적인 단어 (stopwords) 를 제거하여 passwords 를 만듭니다. dict 형식으로 {단어:점수} 형식이어야 합니다. 
+
+	stopwords = {'영화', '관람객', '너무', '정말', '보고'}
+	passwords = {word:score for word, score in sorted(
+	    keywords.items(), key=lambda x:-x[1])[:300] if not (word in stopwords)}
+
+wordcloud 가 이용하는 기본 폰트는 한글 지원이 되지 않습니다. 한글을 지원하는 본인의 폰트를 찾아 font_path 를 준비합니다. 그림의 크기 (width, height) 와 배경색 (background_color) 등을 지정한 뒤, generate_from_frequencies() 함수를 이용하여 그림을 그립니다.
+
+Jupyter notebook 에서 그림을 그릴 때에는 반드시 아래처럼 %matplotlib inline 을 입력해야 합니다. .py 파일로 만들 때에는 이를 입력하지 않습니다.
+
+	%matplotlib inline
+	import matplotlib.pyplot as plt
+
+	fig = plt.figure(figsize=(10, 10))
+	plt.imshow(krwordrank_cloud, interpolation="bilinear")
+	plt.show()
+
+그려진 그림을 저장할 수 있습니다. 
+
+	fig.savefig('./lalaland_wordcloud.png')
+
+저장된 그림은 아래와 같습니다. 
+
+![](./tutorials/lalaland_wordcloud.png)
+
 ## Setup
 
 	pip install krwordrank
