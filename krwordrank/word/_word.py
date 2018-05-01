@@ -100,7 +100,8 @@ class KRWordRank:
 
             is_compound = False
             for e in range(2, len_word - 1):
-                if (word[:e] in keywords) and (word[:e] in keywords):
+                # fixed. comment from Y. cho
+                if (word[:e] in keywords) and (word[e:] in keywords):
                     is_compound = True
                     break
 
