@@ -98,8 +98,9 @@ fig.savefig('./lalaland_wordcloud.png')
     pip install krwordrank
 
 
-## Require
+## Requirements
 
+- Python >= 3.5 (Python 2.x 에서는 테스트 하지 않았습니다)
 - numpy 
 
 [paper]: https://github.com/lovit/KR-WordRank/raw/master/reference/2014_JKIIE_KimETAL_KR-WordRank.pdf
