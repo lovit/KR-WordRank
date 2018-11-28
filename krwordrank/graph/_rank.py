@@ -6,6 +6,12 @@ def hits(graph, beta, max_iter=50, bias=None, verbose=True,
     if not number_of_nodes:
         number_of_nodes = max(len(graph), len(bias))
 
+    if number_of_nodes <= 1:
+        raise ValueError(
+            'The graph should consist of at least two nodes\n',
+            'The node size of inserted graph is %d' % number_of_nodes
+        )
+
     dw = sum_weight / number_of_nodes
     rank = {node:dw for node in graph.keys()}
 
