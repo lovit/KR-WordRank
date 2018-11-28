@@ -9,6 +9,8 @@
 Substring graph를 만들기 위하여 substring의 최소 등장 빈도수 (min count)와 substring의 최대 길이 (max length)를 입력해야 합니다. 
 
 ```python
+from krwordrank.word import KRWordRank
+
 min_count = 5   # 단어의 최소 출현 빈도수 (그래프 생성 시)
 max_length = 10 # 단어의 최대 길이
 wordrank_extractor = KRWordRank(min_count, max_length)
@@ -47,6 +49,10 @@ stopwords = {'영화', '관람객', '너무', '정말', '보고'}
 passwords = {word:score for word, score in sorted(
     keywords.items(), key=lambda x:-x[1])[:300] if not (word in stopwords)}
 ```
+
+wordcloud 의 설치는 아래의 명령어로 설치할 수 있습니다.
+
+    pip install wordcloud
 
 wordcloud 가 이용하는 기본 폰트는 한글 지원이 되지 않습니다. 한글을 지원하는 본인의 폰트를 찾아 font_path 를 준비합니다. 그림의 크기 (width, height) 와 배경색 (background_color) 등을 지정한 뒤, generate_from_frequencies() 함수를 이용하여 그림을 그립니다.
 
