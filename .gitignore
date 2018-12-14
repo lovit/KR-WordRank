@@ -13,3 +13,6 @@ tmp/
 
 # Jupyter notebook
 .ipynb_checkpoints/
+
+# gitbook
+_book/
