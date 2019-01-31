@@ -103,4 +103,7 @@ fig.savefig('./lalaland_wordcloud.png')
 - Python >= 3.5 (Python 2.x 에서는 테스트 하지 않았습니다)
 - numpy 
 
+[![Analytics](https://ga-beacon.appspot.com/UA-129549627-3/kr-wordrank/readme)](https://github.com/lovit/kr-wordrank)
+
+
 [paper]: https://github.com/lovit/KR-WordRank/raw/master/reference/2014_JKIIE_KimETAL_KR-WordRank.pdf
