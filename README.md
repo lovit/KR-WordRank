@@ -149,7 +149,7 @@ stopwords = {'영화', '관람객', '너무', '정말', '진짜'}
 
 keywords, sents = summarize(
     texts,
-    penalty=penalty
+    penalty=penalty,
     stopwords = stopwords,
     diversity=0.5,
     num_keywords=100,
@@ -196,7 +196,7 @@ keywords, sents = summarize(
 penalty=lambda x:0 if (25 <= len(x) <= 80 and not '마지막' in x) else 1,
 keywords, sents = summarize(
     texts,
-    penalty=penalty
+    penalty=penalty,
     stopwords = stopwords,
     diversity=0.5,
     num_keywords=100,
