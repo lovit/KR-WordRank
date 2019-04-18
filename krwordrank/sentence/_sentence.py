@@ -87,7 +87,8 @@ def summarize(texts, num_keywords=100, num_sents=10, diversity=0.3, stopwords=No
 
     # find key-sentences
     sents = keysentence(vocab_score, texts, tokenizer.tokenize, num_sents, diversity, penalty)
-    return vocab_score, sents
+    keywords_ = {vocab:keywords[vocab] for vocab in vocab_score}
+    return keywords_, sents
 
 def keysentence(vocab_score, texts, tokenize, topk=10, diversity=0.3, penalty=None):
     """
