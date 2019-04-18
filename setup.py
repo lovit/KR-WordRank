@@ -1,17 +1,19 @@
-from description import __version__, __author__
+import krwordrank
 from setuptools import setup, find_packages
 
-readme = 'It extracts Korean words and keywords in documents without any linguistical knowloedge.'
+with open('README.md', encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
-   name="krwordrank",
-   version=__version__,
-   author=__author__,
-   author_email='soy.lovit@gmail.com',
-   url='https://github.com/lovit/KR-WordRank',
-   description="KR-WordRank: Korean Unsupervised Word/Keyword Extractor",
-   long_description=readme,
-   install_requires=["numpy>=1.12.1"],
-   keywords = ['Korean word keyword extraction'],
-   packages=find_packages()
+    name="krwordrank",
+    version=krwordrank.__version__,
+    author=krwordrank.__author__,
+    author_email='soy.lovit@gmail.com',
+    url='https://github.com/lovit/KR-WordRank',
+    description="KR-WordRank: Korean Unsupervised Word/Keyword Extractor",
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    install_requires=["numpy>=1.12.1"],
+    keywords = ['Korean word keyword extraction'],
+    packages=find_packages()
 )
