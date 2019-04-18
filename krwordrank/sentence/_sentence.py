@@ -79,7 +79,7 @@ def summarize(texts, num_keywords=100, num_sents=10, diversity=0.3, stopwords=No
 
     # build tokenizer
     if scaling is None:
-        scaling = lambda x:x
+        scaling = lambda x:np.sqrt(x)
     if stopwords is None:
         stopwords = {}
     vocab_score = make_vocab_score(keywords, stopwords, scaling=scaling, topk=num_keywords)
