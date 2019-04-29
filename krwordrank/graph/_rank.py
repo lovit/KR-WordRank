@@ -1,5 +1,33 @@
 def hits(graph, beta, max_iter=50, bias=None, verbose=True, 
     sum_weight=100, number_of_nodes=None, converge=0.001):
+    """
+    It trains rank of node using HITS algorithm.
+
+    Arguments
+    ---------
+    graph : dict of dict
+        Adjacent subword graph. graph[int][int] = float
+    beta : float
+        PageRank damping factor
+    max_iter : int
+        Maximum number of iterations
+    bias : None or dict
+        Bias vector
+    verbose : Boolean
+        If True, it shows training progress.
+    sum_weight : float
+        Sum of weights of all nodes in graph
+    number_of_nodes : None or int
+        Number of nodes in graph
+    converge : float
+        Minimum rank difference between previous step and current step.
+        If the difference is smaller than converge, it do early-stop.
+
+    Returns
+    -------
+    rank : dict
+        Rank dictionary formed as {int:float}.
+    """
 
     if not bias:
         bias = {}
