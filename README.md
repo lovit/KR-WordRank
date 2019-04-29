@@ -50,6 +50,16 @@ passwords = {word:score for word, score in sorted(
     keywords.items(), key=lambda x:-x[1])[:300] if not (word in stopwords)}
 ```
 
+혹은 위의 과정을 간단히 summarize_with_keywords 함수로 진행할 수도 있습니다.
+
+```python
+from krwordrank.word import summarize_with_keywords
+
+keywords = summarize_with_keywords(texts, min_count=5, max_length=10,
+    beta=0.85, max_iter=10, stopwords=stopwords, verbose=True)
+keywords = summarize_with_keywords(texts) # with default arguments
+```
+
 wordcloud 의 설치는 아래의 명령어로 설치할 수 있습니다.
 
     pip install wordcloud
