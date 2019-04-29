@@ -65,8 +65,74 @@ class KeywordVectorizer:
         return csr_matrix((data, (rows, cols)), shape=(n_docs, n_terms))
 
 
-def summarize(texts, num_keywords=100, num_sents=10, diversity=0.3, stopwords=None, scaling=None,
-    penalty=None, min_count=5, max_length=10, max_iter=10, beta=0.85, verbose=False):
+def summarize(texts, num_keywords=100, num_keysents=10, diversity=0.3, stopwords=None, scaling=None,
+    penalty=None, min_count=5, max_length=10, beta=0.85, max_iter=10, num_rset=-1, verbose=False):
+    """
+    It train KR-WordRank to extract keywords and selects key-sentences to summzriaze inserted texts.
+
+        >>> from krwordrank.sentence import summarize
+
+        >>> texts = [] # list of str
+        >>> keywords, sents = summarize(texts, num_keywords=100, num_sents=10)
+
+    Arguments
+    ---------
+    texts : list of str
+        Each str is a sentence.
+    num_keywords : int
+        Number of keywords extracted from KR-WordRank
+        Default is 100.
+    num_keysents : int
+        Number of key-sentences selected from keyword vector maching
+        Default is 10.
+    diversity : float
+        Minimum cosine distance between top ranked sentence and others.
+        Large value makes this function select various sentence.
+        The value must be [0, 1]
+    stopwords : None or set of str
+        Stopwords list for keyword and key-sentence extraction
+    scaling : callable
+        Ranking transform function.
+        scaling(float) = float
+        Default is lambda x:np.sqrt(x)
+    penalty : callable
+        Penalty function. str -> float
+        Default is no penalty
+        If you use only sentence whose length is in [25, 40],
+        set penalty like following example.
+
+            >>> penalty = lambda x: 0 if 25 <= len(x) <= 40 else 1
+
+    min_count : int
+        Minimum frequency of subwords used to construct subword graph
+        Default is 5
+    max_length : int
+        Maximum length of subwords used to construct subword graph
+        Default is 10
+    beta : float
+        PageRank damping factor. 0 < beta < 1
+        Default is 0.85
+    max_iter : int
+        Maximum number of iterations of HITS algorithm.
+        Default is 10
+    num_rset : int
+        Number of R set words sorted by rank. It will be used to L-part word filtering.
+        Default is -1.
+    verbose : Boolean
+        If True, it shows training status
+        Default is False
+
+    Returns
+    -------
+    keysentences : list of str
+
+    Usage
+    -----
+        >>> from krwordrank.sentence import summarize
+
+        >>> texts = [] # list of str
+        >>> keywords, sents = summarize(texts, num_keywords=100, num_sents=10)
+    """
 
     # train KR-WordRank
     wordrank_extractor = KRWordRank(
@@ -75,18 +141,19 @@ def summarize(texts, num_keywords=100, num_sents=10, diversity=0.3, stopwords=No
         verbose = verbose
         )
 
-    keywords, rank, graph = wordrank_extractor.extract(texts, beta, max_iter)
+    keywords, rank, graph = wordrank_extractor.extract(texts,
+        beta, max_iter, num_keywords=num_keywords, num_rset=num_rset)
 
     # build tokenizer
     if scaling is None:
         scaling = lambda x:np.sqrt(x)
     if stopwords is None:
         stopwords = {}
-    vocab_score = make_vocab_score(keywords, stopwords, scaling=scaling, topk=num_keywords)
+    vocab_score = make_vocab_score(keywords, stopwords, scaling=scaling)
     tokenizer = MaxScoreTokenizer(scores=vocab_score)
 
     # find key-sentences
-    sents = keysentence(vocab_score, texts, tokenizer.tokenize, num_sents, diversity, penalty)
+    sents = keysentence(vocab_score, texts, tokenizer.tokenize, num_keysents, diversity, penalty)
     keywords_ = {vocab:keywords[vocab] for vocab in vocab_score}
     return keywords_, sents
 
@@ -172,7 +239,7 @@ def select(x, keyvec, texts, initial_penalty, topk=10, diversity=0.3):
         dist += penalty
     return idxs
 
-def make_vocab_score(keywords, stopwords, negatives=None, scaling=lambda x:x, topk=100):
+def make_vocab_score(keywords, stopwords, negatives=None, scaling=lambda x:x):
     """
     Arguments
     ---------
@@ -184,8 +251,6 @@ def make_vocab_score(keywords, stopwords, negatives=None, scaling=lambda x:x, to
         Penalty term set
     scaling : callable
         number to number. It re-scale rank value of keywords.
-    topk : int
-        Maximum number of keywords that will be used to make keyword vector
 
     Returns
     -------
@@ -195,9 +260,7 @@ def make_vocab_score(keywords, stopwords, negatives=None, scaling=lambda x:x, to
     if negatives is None:
         negatives = {}
     keywords_ = {}
-    for word, rank in sorted(keywords.items(), key=lambda x:-x[1]):
-        if len(keywords_) >= topk:
-            break
+    for word, rank in keywords.items():
         if word in stopwords:
             continue
         if word in negatives:
