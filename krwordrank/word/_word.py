@@ -10,6 +10,26 @@ class KRWordRank:
     Implementation of Kim, H. J., Cho, S., & Kang, P. (2014). KR-WordRank: 
     An Unsupervised Korean Word Extraction Method Based on WordRank. 
     Journal of Korean Institute of Industrial Engineers, 40(1), 18-33.
+
+    Arguments
+    ---------
+    min_count : int
+        Minimum frequency of subwords used to construct subword graph
+        Default is 5
+    max_length : int
+        Maximum length of subwords used to construct subword graph
+        Default is 10
+    verbose : Boolean
+        If True, it shows training status
+        Default is False
+
+    Usage
+    -----
+        >>> from krwordrank.word import KRWordRank
+
+        >>> texts = ['예시 문장 입니다', '여러 문장의 list of str 입니다', ... ]
+        >>> wordrank_extractor = KRWordRank()
+        >>> keywords, rank, graph = wordrank_extractor.extract(texts, beta, max_iter, verbose)
     """
     def __init__(self, min_count=5, max_length=10, verbose=False):
         self.min_count = min_count
@@ -20,6 +40,20 @@ class KRWordRank:
         self.index2vocab = []
 
     def scan_vocabs(self, docs):
+        """
+        It scans subwords positioned of left-side (L) and right-side (R) of words.
+        After scanning was done, KR-WordRank has index2vocab as class attribute.
+
+        Arguments
+        ---------
+        docs : list of str
+            Sentence list
+
+        Returns
+        -------
+        counter : dict
+            {(subword, 'L')] : frequency}
+        """
         self.vocabulary = {}
         if self.verbose:
             print('scan vocabs ... ')
@@ -56,6 +90,50 @@ class KRWordRank:
     
     def extract(self, docs, beta=0.85, max_iter=10, num_keywords=-1,
         num_rset=-1, vocabulary=None, bias=None, rset=None):
+        """
+        It constructs word graph and trains ranks of each node using HITS algorithm.
+        After training it selects suitable subwords as words.
+
+        Arguments
+        ---------
+        docs : list of str
+            Sentence list.
+        beta : float
+            PageRank damping factor. 0 < beta < 1
+            Default is 0.85
+        max_iter : int
+            Maximum number of iterations of HITS algorithm.
+            Default is 10
+        num_keywords : int
+            Number of keywords sorted by rank.
+            Default is -1. If the vaule is negative, it returns all extracted words.
+        num_rset : int
+            Number of R set words sorted by rank. It will be used to L-part word filtering.
+            Default is -1.
+        vocabulary : None or dict
+            User specified vocabulary to index mapper
+        bias : None or dict
+            User specified HITS bias term
+        rset : None or dict
+            User specfied R set
+
+        Returns
+        -------
+        keywords : dict
+            word : rank dictionary. {str:float}
+        rank : dict
+            subword : rank dictionary. {int:float}
+        graph : dict of dict
+            Adjacent subword graph. {int:{int:float}}
+
+        Usage
+        -----
+            >>> from krwordrank.word import KRWordRank
+
+            >>> texts = ['예시 문장 입니다', '여러 문장의 list of str 입니다', ... ]
+            >>> wordrank_extractor = KRWordRank()
+            >>> keywords, rank, graph = wordrank_extractor.extract(texts, beta, max_iter, verbose)
+        """
 
         rank, graph = self.train(docs, beta, max_iter, vocabulary, bias)
 
@@ -138,6 +216,32 @@ class KRWordRank:
         return keywords_
 
     def train(self, docs, beta=0.85, max_iter=10, vocabulary=None, bias=None):
+        """
+        It constructs word graph and trains ranks of each node using HITS algorithm.
+        Use this function only when you want to train rank of subwords
+
+        Arguments
+        ---------
+        docs : list of str
+            Sentence list.
+        beta : float
+            PageRank damping factor. 0 < beta < 1
+            Default is 0.85
+        max_iter : int
+            Maximum number of iterations of HITS algorithm.
+            Default is 10
+        vocabulary : None or dict
+            User specified vocabulary to index mapper
+        bias : None or dict
+            User specified HITS bias term
+
+        Returns
+        -------
+        rank : dict
+            subword : rank dictionary. {int:float}
+        graph : dict of dict
+            Adjacent subword graph. {int:{int:float}}
+        """
         if (not vocabulary) and (not self.vocabulary):
             self.scan_vocabs(docs)
         elif (not vocabulary):
@@ -155,9 +259,35 @@ class KRWordRank:
         return rank, graph
 
     def token2int(self, token):
+        """
+        Arguments
+        ---------
+        token : tuple
+            (subword, 'L') or (subword, 'R')
+            For example, ('이것', 'L') or ('은', 'R')
+
+        Returns
+        -------
+        index : int
+            Corresponding index
+            If it is unknown, it returns -1
+        """
         return self.vocabulary.get(token, -1)
 
     def int2token(self, index):
+        """
+        Arguments
+        ---------
+        index : int
+            Token index
+
+        Returns
+        -------
+        token : tuple
+            Corresponding index formed such as (subword, 'L') or (subword, 'R')
+            For example, ('이것', 'L') or ('은', 'R').
+            If it is unknown, it returns None
+        """
         return self.index2vocab[index] if (0 <= index < len(self.index2vocab)) else None
 
     def _construct_word_graph(self, docs):
