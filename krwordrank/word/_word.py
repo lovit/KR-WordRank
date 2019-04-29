@@ -1,8 +1,81 @@
-from krwordrank.graph import hits
-
 from collections import defaultdict
 import math
 import numpy as np
+
+from krwordrank.graph import hits
+
+
+def summarize_with_keywords(texts, num_keywords=100, stopwords=None, min_count=5,
+    max_length=10, beta=0.85, max_iter=10, num_rset=-1, verbose=False):
+    """
+    It train KR-WordRank to extract keywords from texts.
+
+        >>> from krwordrank.word import summarize_with_keywords
+
+        >>> texts = [] # list of str
+        >>> keywords = summarize_with_keywords(texts, num_keywords=100, min_count=5)
+
+    Arguments
+    ---------
+    texts : list of str
+        Each str is a sentence.
+    num_keywords : int
+        Number of keywords extracted from KR-WordRank
+        Default is 100.
+    stopwords : None or set of str
+        Stopwords list for keyword and key-sentence extraction
+    min_count : int
+        Minimum frequency of subwords used to construct subword graph
+        Default is 5
+    max_length : int
+        Maximum length of subwords used to construct subword graph
+        Default is 10
+    beta : float
+        PageRank damping factor. 0 < beta < 1
+        Default is 0.85
+    max_iter : int
+        Maximum number of iterations of HITS algorithm.
+        Default is 10
+    num_rset : int
+        Number of R set words sorted by rank. It will be used to L-part word filtering.
+        Default is -1.
+    verbose : Boolean
+        If True, it shows training status
+        Default is False
+
+    Returns
+    -------
+    keywords : dict
+        Word : rank dictionary. keywords[str] = float
+
+    Usage
+    -----
+        >>> from krwordrank.word import summarize_with_keywords
+
+        >>> texts = [] # list of str
+        >>> keywords = summarize_with_keywords(texts, num_keywords=100, min_count=5)
+    """
+    # train KR-WordRank
+    wordrank_extractor = KRWordRank(
+        min_count = min_count,
+        max_length = max_length,
+        verbose = verbose
+        )
+
+    keywords, rank, graph = wordrank_extractor.extract(texts,
+        beta, max_iter, num_rset=num_rset)
+
+    # stopword filtering
+    if stopwords is None:
+        stopwords = {}
+    keywords = {word:r for word, r in keywords.items() if not (word in stopwords)}
+
+    # top rank filtering
+    if num_keywords > 0:
+        keywords = {word:r for word, r in sorted(keywords.items(), key=lambda x:-x[1])[:num_keywords]}
+
+    return keywords
+
 
 class KRWordRank:
     """Unsupervised Korean Keyword Extractor
