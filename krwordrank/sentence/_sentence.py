@@ -65,7 +65,7 @@ class KeywordVectorizer:
         return csr_matrix((data, (rows, cols)), shape=(n_docs, n_terms))
 
 
-def summarize(texts, num_keywords=100, num_keysents=10, diversity=0.3, stopwords=None, scaling=None,
+def summarize_with_sentences(texts, num_keywords=100, num_keysents=10, diversity=0.3, stopwords=None, scaling=None,
     penalty=None, min_count=5, max_length=10, beta=0.85, max_iter=10, num_rset=-1, verbose=False):
     """
     It train KR-WordRank to extract keywords and selects key-sentences to summzriaze inserted texts.

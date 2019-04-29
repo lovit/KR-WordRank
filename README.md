@@ -97,13 +97,13 @@ fig.savefig('./lalaland_wordcloud.png')
 
 KR-WordRank >= `1.0.0` 부터는 key sentence extraction 을 제공합니다. KR-WordRank 는 한국어의 토크나이저 기능이 내제되어 있기 때문에 토크나이징이 된 문장 간 유사도를 이용하는 TextRank 방식을 이용하기 어렵습니다. 대신 KR-WordRank 에서는 keywords 를 많이 포함한 문장을 핵심 문장으로 선택합니다. 문장을 추출하는 원리는 추출된 키워드의 랭크값을 이용하여 키워드 벡터를 만든 뒤, 코싸인 유사도 기준으로 입력된 문장 벡터가 키워드 벡터와 유사한 문장을 선택하는 것입니다.
 
-summarize 함수에 texts 를 입력하면 KR-WordRank 를 학습하여 키워드와 이를 이용한 핵심 문장을 선택합니다.
+summarize_with_sentences 함수에 texts 를 입력하면 KR-WordRank 를 학습하여 키워드와 이를 이용한 핵심 문장을 선택합니다.
 
 ```python
-from krwordrank.sentence import summarize
+from krwordrank.sentence import summarize_with_sentences
 
 texts = [] # 라라랜드 영화평
-keywords, sents = summarize(texts, num_keywords=100, num_keysents=10)
+keywords, sents = summarize_with_sentences(texts, num_keywords=100, num_keysents=10)
 ```
 
 keywords 에는 KR-WordRank 로부터 학습된 `num_keywords` 개수의 키워드와 이들의 랭크 값이 dict{str:float} 형식으로 저장되어 있습니다.
@@ -147,7 +147,7 @@ sents 에는 `num_sents` 개의 핵심 문장이 list of str 형식으로 포함
 penalty = lambda x:0 if (25 <= len(x) <= 80) else 1
 stopwords = {'영화', '관람객', '너무', '정말', '진짜'}
 
-keywords, sents = summarize(
+keywords, sents = summarize_with_sentences(
     texts,
     penalty=penalty,
     stopwords = stopwords,
@@ -194,7 +194,7 @@ keywords, sents = summarize(
 
 ```python
 penalty=lambda x:0 if (25 <= len(x) <= 80 and not '마지막' in x) else 1,
-keywords, sents = summarize(
+keywords, sents = summarize_with_sentences(
     texts,
     penalty=penalty,
     stopwords = stopwords,
