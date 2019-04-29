@@ -54,19 +54,27 @@ class KRWordRank:
         self.index2vocab = [vocab for vocab, index in sorted(self.vocabulary.items(), key=lambda x:x[1])]
         self.sum_weight = len(self.index2vocab)
     
-    def extract(self, docs, beta=0.85, max_iter=10, vocabulary=None, bias=None, rset=None):
+    def extract(self, docs, beta=0.85, max_iter=10, num_keywords=-1,
+        num_rset=-1, vocabulary=None, bias=None, rset=None):
+
         rank, graph = self.train(docs, beta, max_iter, vocabulary, bias)
 
         lset = {self.int2token(idx)[0]:r for idx, r in rank.items() if self.int2token(idx)[1] == 'L'}
         if not rset:
             rset = {self.int2token(idx)[0]:r for idx, r in rank.items() if self.int2token(idx)[1] == 'R'}
 
+        if num_rset > 0:
+            rset = {token:r for token, r in sorted(rset.items(), key=lambda x:-x[1])[:num_rset]}
+
         keywords = self._select_keywords(lset, rset)
         keywords = self._filter_compounds(keywords)
         keywords = self._filter_subtokens(keywords)
-        
+
+        if num_keywords > 0:
+            keywords = {token:r for token, r in sorted(keywords.items(), key=lambda x:-x[1])[:num_keywords]}
+
         return keywords, rank, graph
-        
+
     def _select_keywords(self, lset, rset):
         keywords = {}
         for word, r in sorted(lset.items(), key=lambda x:x[1], reverse=True):
