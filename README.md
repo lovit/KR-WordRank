@@ -103,7 +103,7 @@ summarize 함수에 texts 를 입력하면 KR-WordRank 를 학습하여 키워�
 from krwordrank.sentence import summarize
 
 texts = [] # 라라랜드 영화평
-keywords, sents = summarize(texts, num_keywords=100, num_sents=10)
+keywords, sents = summarize(texts, num_keywords=100, num_keysents=10)
 ```
 
 keywords 에는 KR-WordRank 로부터 학습된 `num_keywords` 개수의 키워드와 이들의 랭크 값이 dict{str:float} 형식으로 저장되어 있습니다.
@@ -153,7 +153,7 @@ keywords, sents = summarize(
     stopwords = stopwords,
     diversity=0.5,
     num_keywords=100,
-    num_sents=10,
+    num_keysents=10,
     verbose=False
 )
 ```
@@ -200,7 +200,7 @@ keywords, sents = summarize(
     stopwords = stopwords,
     diversity=0.5,
     num_keywords=100,
-    num_sents=10,
+    num_keysents=10,
     verbose=False
 )
 
