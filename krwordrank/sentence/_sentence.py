@@ -70,10 +70,10 @@ def summarize_with_sentences(texts, num_keywords=100, num_keysents=10, diversity
     """
     It train KR-WordRank to extract keywords and selects key-sentences to summzriaze inserted texts.
 
-        >>> from krwordrank.sentence import summarize
+        >>> from krwordrank.sentence import summarize_with_sentences
 
         >>> texts = [] # list of str
-        >>> keywords, sents = summarize(texts, num_keywords=100, num_sents=10)
+        >>> keywords, sents = summarize_with_sentences(texts, num_keywords=100, num_keysents=10)
 
     Arguments
     ---------
@@ -128,10 +128,10 @@ def summarize_with_sentences(texts, num_keywords=100, num_keysents=10, diversity
 
     Usage
     -----
-        >>> from krwordrank.sentence import summarize
+        >>> from krwordrank.sentence import summarize_with_sentences
 
         >>> texts = [] # list of str
-        >>> keywords, sents = summarize(texts, num_keywords=100, num_sents=10)
+        >>> keywords, sents = summarize_with_sentences(texts, num_keywords=100, num_keysents=10)
     """
 
     # train KR-WordRank
@@ -141,15 +141,19 @@ def summarize_with_sentences(texts, num_keywords=100, num_keysents=10, diversity
         verbose = verbose
         )
 
+    num_keywords_ = num_keywords
+    if stopwords is not None:
+        num_keywords_ += len(stopwords)
+
     keywords, rank, graph = wordrank_extractor.extract(texts,
-        beta, max_iter, num_keywords=num_keywords, num_rset=num_rset)
+        beta, max_iter, num_keywords=num_keywords_, num_rset=num_rset)
 
     # build tokenizer
     if scaling is None:
         scaling = lambda x:np.sqrt(x)
     if stopwords is None:
         stopwords = {}
-    vocab_score = make_vocab_score(keywords, stopwords, scaling=scaling)
+    vocab_score = make_vocab_score(keywords, stopwords, scaling=scaling, topk=num_keywords)
     tokenizer = MaxScoreTokenizer(scores=vocab_score)
 
     # find key-sentences
@@ -239,7 +243,7 @@ def select(x, keyvec, texts, initial_penalty, topk=10, diversity=0.3):
         dist += penalty
     return idxs
 
-def make_vocab_score(keywords, stopwords, negatives=None, scaling=lambda x:x):
+def make_vocab_score(keywords, stopwords, negatives=None, scaling=lambda x:x, topk=100):
     """
     Arguments
     ---------
@@ -251,6 +255,8 @@ def make_vocab_score(keywords, stopwords, negatives=None, scaling=lambda x:x):
         Penalty term set
     scaling : callable
         number to number. It re-scale rank value of keywords.
+    topk : int
+        Number of keywords
 
     Returns
     -------
@@ -260,7 +266,9 @@ def make_vocab_score(keywords, stopwords, negatives=None, scaling=lambda x:x):
     if negatives is None:
         negatives = {}
     keywords_ = {}
-    for word, rank in keywords.items():
+    for word, rank in sorted(keywords.items(), key=lambda x:-x[1]):
+        if len(keywords_) >= topk:
+            break
         if word in stopwords:
             continue
         if word in negatives:
