@@ -10,6 +10,9 @@ from krwordrank.hangle import normalize
 from krwordrank.sentence import summarize_with_sentences
 from krwordrank.word import KRWordRank
 
+# pytest execution with verbose
+# $ pytest tests/basic_test.py -s -v
+
 
 @pytest.fixture
 def test_config():
