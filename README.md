@@ -233,12 +233,17 @@ print(sents)
 
 ## Setup
 
-    pip install krwordrank
+```
+pip install krwordrank
+```
 
+tested in
+- python 3.5.9
+- python 3.7.7
 
 ## Requirements
 
-- Python >= 3.5 (Python 2.x 에서는 테스트 하지 않았습니다)
+- Python >= 3.5
 - numpy 
 
 [![Analytics](https://ga-beacon.appspot.com/UA-129549627-3/kr-wordrank/readme)](https://github.com/lovit/kr-wordrank)
