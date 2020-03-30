@@ -7,6 +7,7 @@ sys.path.insert(0, root)
 import krwordrank
 from krwordrank.hangle import initialize_pattern
 from krwordrank.hangle import normalize
+from krwordrank.sentence import summarize_with_sentences
 from krwordrank.word import KRWordRank
 
 
@@ -44,3 +45,17 @@ def test_keyword(test_config):
     selected_keywords = [word for word, r in sorted(keywords.items(), key=lambda x:x[1], reverse=True)[:30]]
     assert selected_keywords[:5] == ['영화', '너무', '정말', '음악', '마지막']
     print('\nKR-WordRank 라라랜드 영화 리뷰 30 개 키워드\n{}\n'.format(selected_keywords))
+
+
+def test_keysentence(test_config):
+    data_path = test_config['data_path']
+    with open(data_path, encoding='utf-8') as f:
+        texts = [line.rsplit('\t')[0].strip() for line in f]
+
+    keywords, sents = summarize_with_sentences(texts, num_keywords=100, num_keysents=10)
+    for word in ['영화', '너무', '정말', '음악', '마지막']:
+        assert word in keywords
+    assert len(sents) == 10
+    print('\nKR-WordRank key-sentence extraction 라라랜드 영화 리뷰 10 개 핵심 문장')
+    for sent in sents:
+        print(' - {}'.format(sent))
