@@ -11,7 +11,7 @@ from krwordrank.sentence import summarize_with_sentences
 from krwordrank.word import KRWordRank
 
 # pytest execution with verbose
-# $ pytest tests/basic_test.py -s -v
+# $ pytest tests/test_krwordrank.py -s -v
 
 
 @pytest.fixture
