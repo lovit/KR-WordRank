@@ -245,6 +245,7 @@ tested in
 
 - Python >= 3.5
 - numpy 
+- scipy
 
 [![Analytics](https://ga-beacon.appspot.com/UA-129549627-3/kr-wordrank/readme)](https://github.com/lovit/kr-wordrank)
 
