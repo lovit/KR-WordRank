@@ -146,7 +146,7 @@ def summarize_with_sentences(texts, num_keywords=100, num_keysents=10, diversity
         num_keywords_ += len(stopwords)
 
     keywords, rank, graph = wordrank_extractor.extract(texts,
-        beta, max_iter, num_keywords=num_keywords_, num_rset=num_rset,bias=bias)
+        beta, max_iter, num_keywords=num_keywords_, num_rset=num_rset, bias=bias)
 
     # build tokenizer
     if scaling is None:
