@@ -323,7 +323,17 @@ class KRWordRank:
 
         graph = self._construct_word_graph(docs)
 
-        rank = hits(graph, beta, max_iter, bias,
+        # add custom bias dict
+        encoded_bias = {}
+        custom_bias_dict = bias
+
+        if custom_bias_dict:
+            for word, value in custom_bias_dict.items():
+                encoded_word = self.token2int((word, 'L'))
+                if encoded_word != -1:
+                    encoded_bias[encoded_word] = value
+
+        rank = hits(graph, beta, max_iter, encoded_bias,
                     sum_weight=self.sum_weight,
                     number_of_nodes=len(self.vocabulary),
                     verbose=self.verbose
