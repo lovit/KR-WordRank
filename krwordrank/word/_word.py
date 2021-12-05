@@ -307,6 +307,7 @@ class KRWordRank:
             User specified vocabulary to index mapper
         bias : None or dict
             User specified HITS bias term
+            {str: float} Format
 
         Returns
         -------
