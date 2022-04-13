@@ -66,7 +66,7 @@ class KeywordVectorizer:
 
 
 def summarize_with_sentences(texts, num_keywords=100, num_keysents=10, diversity=0.3, stopwords=None, scaling=None,
-    penalty=None, min_count=5, max_length=10, beta=0.85, max_iter=10, num_rset=-1, verbose=False, bias=None):
+    penalty=None, min_count=5, max_length=10, beta=0.85, max_iter=10, num_rset=-1, verbose=False, bias=None, return_indices=False):
     """
     It train KR-WordRank to extract keywords and selects key-sentences to summzriaze inserted texts.
 
@@ -157,11 +157,16 @@ def summarize_with_sentences(texts, num_keywords=100, num_keysents=10, diversity
     tokenizer = MaxScoreTokenizer(scores=vocab_score)
 
     # find key-sentences
-    sents = keysentence(vocab_score, texts, tokenizer.tokenize, num_keysents, diversity, penalty)
-    keywords_ = {vocab:keywords[vocab] for vocab in vocab_score}
-    return keywords_, sents
+    if return_indices is True:
+        sents, idxs = keysentence(vocab_score, texts, tokenizer.tokenize, num_keysents, diversity, penalty, return_indices=return_indices)
+        keywords_ = {vocab:keywords[vocab] for vocab in vocab_score}
+        return keywords_, sents, idxs
+    else: 
+        sents = keysentence(vocab_score, texts, tokenizer.tokenize, num_keysents, diversity, penalty, return_indices=return_indices)
+        keywords_ = {vocab:keywords[vocab] for vocab in vocab_score}
+        return keywords_, sents
 
-def keysentence(vocab_score, texts, tokenize, topk=10, diversity=0.3, penalty=None):
+def keysentence(vocab_score, texts, tokenize, topk=10, diversity=0.3, penalty=None, return_indices=False):
     """
     Arguments
     ---------
@@ -201,7 +206,10 @@ def keysentence(vocab_score, texts, tokenize, topk=10, diversity=0.3, penalty=No
     keyvec = vectorizer.keyword_vector.reshape(1,-1)
     initial_penalty = np.asarray([penalty(sent) for sent in texts])
     idxs = select(x, keyvec, texts, initial_penalty, topk, diversity)
-    return [texts[idx] for idx in idxs]
+    if return_indices is True:
+        return [texts[idx] for idx in idxs], idxs
+    else : 
+        return [texts[idx] for idx in idxs]
 
 def select(x, keyvec, texts, initial_penalty, topk=10, diversity=0.3):
     """
