@@ -1,1 +1,0 @@
-# Example front page
