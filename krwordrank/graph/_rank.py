@@ -1,5 +1,4 @@
-def hits(graph, beta, max_iter=50, bias=None, verbose=True, 
-    sum_weight=100, number_of_nodes=None, converge=0.001):
+def hits(graph, beta, max_iter=50, bias=None, verbose=True, sum_weight=100, number_of_nodes=None, converge=0.001):
     """
     It trains rank of node using HITS algorithm.
 
@@ -36,12 +35,11 @@ def hits(graph, beta, max_iter=50, bias=None, verbose=True,
 
     if number_of_nodes <= 1:
         raise ValueError(
-            'The graph should consist of at least two nodes\n',
-            'The node size of inserted graph is %d' % number_of_nodes
+            "The graph should consist of at least two nodes\n", "The node size of inserted graph is %d" % number_of_nodes
         )
 
     dw = sum_weight / number_of_nodes
-    rank = {node:dw for node in graph.keys()}
+    rank = {node: dw for node in graph.keys()}
 
     for num_iter in range(1, max_iter + 1):
         rank_ = _update(rank, graph, bias, dw, beta)
@@ -50,16 +48,17 @@ def hits(graph, beta, max_iter=50, bias=None, verbose=True,
 
         if diff < sum_weight * converge:
             if verbose:
-                print('\riter = %d Early stopped.' % num_iter, end='', flush=True)
+                print("\riter = %d Early stopped." % num_iter, end="", flush=True)
             break
 
         if verbose:
-            print('\riter = %d' % num_iter, end='', flush=True)
+            print("\riter = %d" % num_iter, end="", flush=True)
 
     if verbose:
-        print('\rdone')
+        print("\rdone")
 
     return rank
+
 
 def _update(rank, graph, bias, dw, beta):
     rank_new = {}

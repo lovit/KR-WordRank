@@ -1,17 +1,15 @@
 import re
-import sys
+
+korean_pattern_str = "가-힣"
+number_pattern_str = "0-9"
+alphabet_pattern_str = "a-zA-Z"
+puntuation_pattern_str = ".,?!"
+
+doublespace_pattern = re.compile(r"\s+")
+repeatchars_pattern = re.compile(r"(\w)\\1{3,}")
 
 
-korean_pattern_str = '가-힣'
-number_pattern_str = '0-9'
-alphabet_pattern_str = 'a-zA-Z'
-puntuation_pattern_str = '.,?!'
-
-doublespace_pattern = re.compile(r'\s+')
-repeatchars_pattern = re.compile(r'(\w)\\1{3,}')
-
-def normalize(doc, english=False, number=False, punctuation=False,
-    remove_repeat=0, remains=None, pattern=None):
+def normalize(doc, english=False, number=False, punctuation=False, remove_repeat=0, remains=None, pattern=None):
     """
     Arguments
     ---------
@@ -39,21 +37,15 @@ def normalize(doc, english=False, number=False, punctuation=False,
         Normalized string
     """
 
-    if sys.version_info.major >= 3 and sys.version_info.minor <= 6:
-        if not isinstance(pattern, re._pattern_type):
-            pattern = initialize_pattern(english, number, punctuation, remains)
-    elif sys.version_info.major >= 3 and sys.version_info.minor >= 7:
-        if not isinstance(pattern, re.Pattern):
-            pattern = initialize_pattern(english, number, punctuation, remains)
-    else:
-        if not isinstance(pattern, re.Pattern):
-            pattern = initialize_pattern(english, number, punctuation, remains)
+    if not isinstance(pattern, re.Pattern):
+        pattern = initialize_pattern(english, number, punctuation, remains)
 
     if remove_repeat > 0:
-        doc = repeatchars_pattern.sub('\\1' * remove_repeat, doc)
+        doc = repeatchars_pattern.sub("\\1" * remove_repeat, doc)
 
-    doc = pattern.sub(' ', doc)
-    return doublespace_pattern.sub(' ', doc).strip()
+    doc = pattern.sub(" ", doc)
+    return doublespace_pattern.sub(" ", doc).strip()
+
 
 def initialize_pattern(english=False, number=False, punctuation=False, remains=None):
     """
@@ -88,4 +80,4 @@ def initialize_pattern(english=False, number=False, punctuation=False, remains=N
         pattern += puntuation_pattern_str
     if isinstance(remains, str):
         pattern += remains
-    return re.compile(r'[^%s]' % pattern)
+    return re.compile(r"[^%s]" % pattern)

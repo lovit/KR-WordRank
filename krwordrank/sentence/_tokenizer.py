@@ -32,6 +32,8 @@ class MaxScoreTokenizer:
 
         scores = self._initialize(token, range_l, length)
         if debug:
+            from pprint import pprint
+
             pprint(scores)
 
         result = self._find(scores)
@@ -44,7 +46,7 @@ class MaxScoreTokenizer:
         if result[0][1] != 0:
             adds += self._add_first_subtoken(token, result)
 
-        return sorted(result + adds, key=lambda x:x[1])
+        return sorted(result + adds, key=lambda x: x[1])
 
     def _initialize(self, token, range_l, length):
         scores = []
@@ -59,7 +61,7 @@ class MaxScoreTokenizer:
                 score = self._scores.get(subtoken, self._ds)
                 scores.append((subtoken, b, e, score, r))
 
-        return sorted(scores, key=lambda x:(-x[3], -x[4], x[1]))
+        return sorted(scores, key=lambda x: (-x[3], -x[4], x[1]))
 
     def _find(self, scores):
         result = []
@@ -81,18 +83,19 @@ class MaxScoreTokenizer:
                 del scores[i]
 
             num_iter += 1
-            if num_iter > 100: break
+            if num_iter > 100:
+                break
 
-        return sorted(result, key=lambda x:x[1])
+        return sorted(result, key=lambda x: x[1])
 
     def _add_inter_subtokens(self, token, result):
         adds = []
         for i, base in enumerate(result[:-1]):
-            if base[2] == result[i+1][1]:
+            if base[2] == result[i + 1][1]:
                 continue
 
             b = base[2]
-            e = result[i+1][1]
+            e = result[i + 1][1]
             subtoken = token[b:e]
             adds.append((subtoken, b, e, self._ds, e - b))
 

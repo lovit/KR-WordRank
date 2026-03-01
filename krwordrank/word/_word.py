@@ -1,12 +1,11 @@
 from collections import defaultdict
-import math
-import numpy as np
 
 from krwordrank.graph import hits
 
 
-def summarize_with_keywords(texts, num_keywords=100, stopwords=None, min_count=5,
-    max_length=10, beta=0.85, max_iter=10, num_rset=-1, verbose=False):
+def summarize_with_keywords(
+    texts, num_keywords=100, stopwords=None, min_count=5, max_length=10, beta=0.85, max_iter=10, num_rset=-1, verbose=False
+):
     """
     It train KR-WordRank to extract keywords from texts.
 
@@ -56,23 +55,18 @@ def summarize_with_keywords(texts, num_keywords=100, stopwords=None, min_count=5
         >>> keywords = summarize_with_keywords(texts, num_keywords=100, min_count=5)
     """
     # train KR-WordRank
-    wordrank_extractor = KRWordRank(
-        min_count = min_count,
-        max_length = max_length,
-        verbose = verbose
-        )
+    wordrank_extractor = KRWordRank(min_count=min_count, max_length=max_length, verbose=verbose)
 
-    keywords, rank, graph = wordrank_extractor.extract(texts,
-        beta, max_iter, num_rset=num_rset)
+    keywords, rank, graph = wordrank_extractor.extract(texts, beta, max_iter, num_rset=num_rset)
 
     # stopword filtering
     if stopwords is None:
         stopwords = {}
-    keywords = {word:r for word, r in keywords.items() if not (word in stopwords)}
+    keywords = {word: r for word, r in keywords.items() if word not in stopwords}
 
     # top rank filtering
     if num_keywords > 0:
-        keywords = {word:r for word, r in sorted(keywords.items(), key=lambda x:-x[1])[:num_keywords]}
+        keywords = {word: r for word, r in sorted(keywords.items(), key=lambda x: -x[1])[:num_keywords]}
 
     return keywords
 
@@ -80,8 +74,8 @@ def summarize_with_keywords(texts, num_keywords=100, stopwords=None, min_count=5
 class KRWordRank:
     """Unsupervised Korean Keyword Extractor
 
-    Implementation of Kim, H. J., Cho, S., & Kang, P. (2014). KR-WordRank: 
-    An Unsupervised Korean Word Extraction Method Based on WordRank. 
+    Implementation of Kim, H. J., Cho, S., & Kang, P. (2014). KR-WordRank:
+    An Unsupervised Korean Word Extraction Method Based on WordRank.
     Journal of Korean Institute of Industrial Engineers, 40(1), 18-33.
 
     Arguments
@@ -104,6 +98,7 @@ class KRWordRank:
         >>> wordrank_extractor = KRWordRank()
         >>> keywords, rank, graph = wordrank_extractor.extract(texts, beta, max_iter, verbose)
     """
+
     def __init__(self, min_count=5, max_length=10, verbose=False):
         self.min_count = min_count
         self.max_length = max_length
@@ -129,40 +124,38 @@ class KRWordRank:
         """
         self.vocabulary = {}
         if self.verbose:
-            print('scan vocabs ... ')
+            print("scan vocabs ... ")
 
         counter = {}
         for doc in docs:
-
             for token in doc.split():
                 len_token = len(token)
-                counter[(token, 'L')] = counter.get((token, 'L'), 0) + 1
+                counter[(token, "L")] = counter.get((token, "L"), 0) + 1
 
                 for e in range(1, min(len(token), self.max_length)):
                     if (len_token - e) > self.max_length:
                         continue
 
-                    l_sub = (token[:e], 'L')
-                    r_sub = (token[e:], 'R')
+                    l_sub = (token[:e], "L")
+                    r_sub = (token[e:], "R")
                     counter[l_sub] = counter.get(l_sub, 0) + 1
                     counter[r_sub] = counter.get(r_sub, 0) + 1
 
-        counter = {token:freq for token, freq in counter.items() if freq >= self.min_count}
-        for token, _ in sorted(counter.items(), key=lambda x:x[1], reverse=True):
+        counter = {token: freq for token, freq in counter.items() if freq >= self.min_count}
+        for token, _ in sorted(counter.items(), key=lambda x: x[1], reverse=True):
             self.vocabulary[token] = len(self.vocabulary)
 
         self._build_index2vocab()
 
         if self.verbose:
-            print('num vocabs = %d' % len(counter))
+            print("num vocabs = %d" % len(counter))
         return counter
 
     def _build_index2vocab(self):
-        self.index2vocab = [vocab for vocab, index in sorted(self.vocabulary.items(), key=lambda x:x[1])]
+        self.index2vocab = [vocab for vocab, index in sorted(self.vocabulary.items(), key=lambda x: x[1])]
         self.sum_weight = len(self.index2vocab)
-    
-    def extract(self, docs, beta=0.85, max_iter=10, num_keywords=-1,
-        num_rset=-1, vocabulary=None, bias=None, rset=None):
+
+    def extract(self, docs, beta=0.85, max_iter=10, num_keywords=-1, num_rset=-1, vocabulary=None, bias=None, rset=None):
         """
         It constructs word graph and trains ranks of each node using HITS algorithm.
         After training it selects suitable subwords as words.
@@ -210,25 +203,25 @@ class KRWordRank:
 
         rank, graph = self.train(docs, beta, max_iter, vocabulary, bias)
 
-        lset = {self.int2token(idx)[0]:r for idx, r in rank.items() if self.int2token(idx)[1] == 'L'}
+        lset = {self.int2token(idx)[0]: r for idx, r in rank.items() if self.int2token(idx)[1] == "L"}
         if not rset:
-            rset = {self.int2token(idx)[0]:r for idx, r in rank.items() if self.int2token(idx)[1] == 'R'}
+            rset = {self.int2token(idx)[0]: r for idx, r in rank.items() if self.int2token(idx)[1] == "R"}
 
         if num_rset > 0:
-            rset = {token:r for token, r in sorted(rset.items(), key=lambda x:-x[1])[:num_rset]}
+            rset = {token: r for token, r in sorted(rset.items(), key=lambda x: -x[1])[:num_rset]}
 
         keywords = self._select_keywords(lset, rset)
         keywords = self._filter_compounds(keywords)
         keywords = self._filter_subtokens(keywords)
 
         if num_keywords > 0:
-            keywords = {token:r for token, r in sorted(keywords.items(), key=lambda x:-x[1])[:num_keywords]}
+            keywords = {token: r for token, r in sorted(keywords.items(), key=lambda x: -x[1])[:num_keywords]}
 
         return keywords, rank, graph
 
     def _select_keywords(self, lset, rset):
         keywords = {}
-        for word, r in sorted(lset.items(), key=lambda x:x[1], reverse=True):
+        for word, r in sorted(lset.items(), key=lambda x: x[1], reverse=True):
             len_word = len(word)
             if len_word == 1:
                 continue
@@ -245,8 +238,8 @@ class KRWordRank:
         return keywords
 
     def _filter_compounds(self, keywords):
-        keywords_= {}
-        for word, r in sorted(keywords.items(), key=lambda x:x[1], reverse=True):
+        keywords_ = {}
+        for word, r in sorted(keywords.items(), key=lambda x: x[1], reverse=True):
             len_word = len(word)
 
             if len_word <= 2:
@@ -273,8 +266,8 @@ class KRWordRank:
         subtokens = set()
         keywords_ = {}
 
-        for word, r in sorted(keywords.items(), key=lambda x:x[1], reverse=True):
-            subs = {word[:e] for e in range(2, len(word)+1)}
+        for word, r in sorted(keywords.items(), key=lambda x: x[1], reverse=True):
+            subs = {word[:e] for e in range(2, len(word) + 1)}
 
             is_subtoken = False
             for sub in subs:
@@ -318,7 +311,7 @@ class KRWordRank:
         """
         if (not vocabulary) and (not self.vocabulary):
             self.scan_vocabs(docs)
-        elif (not vocabulary):
+        elif not vocabulary:
             self.vocabulary = vocabulary
             self._build_index2vocab()
 
@@ -330,15 +323,19 @@ class KRWordRank:
 
         if custom_bias_dict:
             for word, value in custom_bias_dict.items():
-                encoded_word = self.token2int((word, 'L'))
+                encoded_word = self.token2int((word, "L"))
                 if encoded_word != -1:
                     encoded_bias[encoded_word] = value
 
-        rank = hits(graph, beta, max_iter, encoded_bias,
-                    sum_weight=self.sum_weight,
-                    number_of_nodes=len(self.vocabulary),
-                    verbose=self.verbose
-                    )
+        rank = hits(
+            graph,
+            beta,
+            max_iter,
+            encoded_bias,
+            sum_weight=self.sum_weight,
+            number_of_nodes=len(self.vocabulary),
+            verbose=self.verbose,
+        )
 
         return rank, graph
 
@@ -381,12 +378,11 @@ class KRWordRank:
                 sum_ = sum(to_dict.values())
                 for to_, w in to_dict.items():
                     graph_[to_][from_] = w / sum_
-            graph_ = {t:dict(fd) for t, fd in graph_.items()}
+            graph_ = {t: dict(fd) for t, fd in graph_.items()}
             return graph_
 
         graph = defaultdict(lambda: defaultdict(lambda: 0))
         for doc in docs:
-
             tokens = doc.split()
 
             if not tokens:
@@ -419,23 +415,24 @@ class KRWordRank:
         for e in range(1, min(len_token, 10)):
             if (len_token - e) > self.max_length:
                 continue
-            links.append( ((token[:e], 'L'), (token[e:], 'R')) )
+            links.append(((token[:e], "L"), (token[e:], "R")))
         return links
 
     def _inter_link(self, tokens):
         def rsub_to_token(t_left, t_curr):
-            return [((t_left[-b:], 'R'), (t_curr, 'L')) for b in range(1, min(10, len(t_left)))]
+            return [((t_left[-b:], "R"), (t_curr, "L")) for b in range(1, min(10, len(t_left)))]
+
         def token_to_lsub(t_curr, t_rigt):
-            return [((t_curr, 'L'), (t_rigt[:e], 'L')) for e in range(1, min(10, len(t_rigt)))]
+            return [((t_curr, "L"), (t_rigt[:e], "L")) for e in range(1, min(10, len(t_rigt)))]
 
         links = []
-        for i in range(1, len(tokens)-1):
-            links += rsub_to_token(tokens[i-1], tokens[i])
-            links += token_to_lsub(tokens[i], tokens[i+1])
+        for i in range(1, len(tokens) - 1):
+            links += rsub_to_token(tokens[i - 1], tokens[i])
+            links += token_to_lsub(tokens[i], tokens[i + 1])
         return links
 
     def _check_token(self, token_list):
         return [(token[0], token[1]) for token in token_list if (token[0] in self.vocabulary and token[1] in self.vocabulary)]
 
     def _encode_token(self, token_list):
-        return [(self.vocabulary[token[0]],self.vocabulary[token[1]]) for token in token_list]
+        return [(self.vocabulary[token[0]], self.vocabulary[token[1]]) for token in token_list]
