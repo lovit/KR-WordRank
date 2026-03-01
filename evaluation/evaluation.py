@@ -1,6 +1,7 @@
 from collections import namedtuple
 
-Performance = namedtuple('Performance', 'n_keywords n_keysents rouge1'.split())
+Performance = namedtuple("Performance", "n_keywords n_keysents rouge1".split())
+
 
 def rouge1(keywords, keysents, tokenize, n_keywords=None, n_keysents=None):
     """
@@ -30,7 +31,7 @@ def rouge1(keywords, keysents, tokenize, n_keywords=None, n_keysents=None):
     keysents = [tokenize(sent) for sent in keysents]
     performance = []
     for n_keyword in n_keywords:
-        keywords_ = {w for w, _ in sorted(keywords.items(), key=lambda x:-x[1])[:n_keyword]}
+        keywords_ = {w for w, _ in sorted(keywords.items(), key=lambda x: -x[1])[:n_keyword]}
         for n_keysent in n_keysents:
             sents = keysents[:n_keysent]
             word_set = {w for sent in sents for w in sent}
