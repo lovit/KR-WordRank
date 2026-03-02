@@ -13,6 +13,9 @@ dependencies = [
     "scikit-learn>=0.22.1",
 ]
 
+[project.scripts]
+krwordrank = "krwordrank.cli:main"
+
 [project.urls]
 Homepage = "https://github.com/lovit/KR-WordRank"
 
@@ -28,6 +31,7 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.9",
     "pre-commit>=4.0",
+    "nbconvert>=7.17.0",
 ]
 
 [tool.ruff]

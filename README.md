@@ -10,6 +10,73 @@ KR-WordRank는 한국어 텍스트에서 별도의 형태소 분석기 없이 �
 
 핵심 문장 추출은 추출된 키워드의 랭크값으로 키워드 벡터를 만든 뒤, 코사인 유사도 기준으로 키워드 벡터와 가장 유사한 문장을 순서대로 선택합니다.
 
+## CLI
+
+키워드 추출과 핵심 문장 추출을 명령줄에서 사용할 수 있습니다.
+
+**입력 형식**
+
+- **text** (기본): 한 줄에 한 문서. 탭이 있으면 첫 번째 컬럼만 사용(TSV 호환).
+- **jsonl**: JSON Lines. 각 줄이 JSON 객체이며, 문서 텍스트는 `--field` 로 지정한 키의 값.
+
+```bash
+# 키워드만 추출 (텍스트 파일, 탭 구분 시 첫 컬럼 사용)
+krwordrank keywords -i sentences.txt -n 50
+krwordrank keywords -i sentences.txt -n 50 -s "영화,너무,정말" --json
+
+# JSONL: 문서가 들어 있는 필드 지정
+krwordrank keywords -i reviews.jsonl --format jsonl --field text -n 50
+
+# 키워드 + 핵심 문장 추출
+krwordrank keysents -i sentences.txt -k 10
+krwordrank keysents -k 5 --keywords-only --number   # stdin, 문장만 번호와 함께 출력
+```
+
+- **keywords**: `-i` 입력 파일, `--format text|jsonl`, `--field` (jsonl일 때 필수), `-n` 개수, `-s` stopwords, `--json` 등
+- **keysents**: `-i`, `--format`, `--field`, `-n`/`-k`, `--diversity`, `--min-len`/`--max-len`, `--show-indices` 등
+
+자세한 옵션은 `krwordrank keywords --help`, `krwordrank keysents --help` 로 확인할 수 있습니다.
+
+### 실행 예 (`-i`, `-n` 만 사용하는 경우)
+
+입력 파일과 키워드 개수만 지정했을 때의 출력 예시입니다. (데이터: 라라랜드 영화 리뷰 `tests/integration/data/134963.txt`)
+
+**keywords** — `krwordrank keywords -i tests/integration/data/134963.txt -n 15`
+
+```
+영화	201.021643
+너무	81.536356
+정말	40.536756
+음악	40.434113
+마지막	38.597046
+뮤지컬	23.198629
+최고	21.809913
+사랑	20.638357
+꿈을	20.437313
+아름	20.324538
+영상	20.283797
+여운이	19.471221
+진짜	19.064176
+노래	18.732641
+보고	18.567060
+```
+
+**keysents** — `krwordrank keysents -i tests/integration/data/134963.txt -n 20 -k 5`
+
+키워드 목록(`keyword	단어	랭크`) 다음에 구분선 `---` 가 나오고, 그 아래 선택된 핵심 문장 5개가 출력됩니다.
+
+```
+keyword	영화	201.021643
+keyword	너무	81.536356
+... (상위 20개 키워드)
+---
+영상미도 너무 아름답고 신나는 음악도 좋았다 마지막 세바스찬과 미아의 눈빛교환은 정말 마음 아팠음 ...
+정말 멋진 노래와 음악과 영상미까지 정말 너무 멋있는 영화 눈물을 흘리면서 봤습니다 ...
+처음엔 초딩들 보는 그냥 그런영화인줄 알았는데 정말로 눈과 귀가 즐거운 영화였습니다 ...
+무언의 마지막 피아노연주 완전 슬픔ㅠ보는이들에게 꿈을 상기시켜줄듯 또 보고 싶은 내생에 최고의 뮤지컬영화였음 ...
+오랜만에 좋은 영화봤다는 생각들었구요 음악도 영상도 스토리도 너무나좋았고 ...
+```
+
 ## Keyword extraction
 
 ### KRWordRank.extract
@@ -109,10 +176,10 @@ fig = plt.figure(figsize=(10, 10))
 plt.imshow(wc, interpolation="bilinear")
 plt.show()
 
-fig.savefig('./lalaland_wordcloud.png')
+fig.savefig('./tutorials/figs/lalaland_wordcloud.png')
 ```
 
-![](./tutorials/lalaland_wordcloud.png)
+![](./tutorials/figs/lalaland_wordcloud.png)
 
 ## Key-sentence extraction
 

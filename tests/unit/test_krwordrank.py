@@ -4,7 +4,7 @@ import pytest
 
 from krwordrank.hangle import initialize_pattern, normalize
 
-DATA_PATH = Path(__file__).parent.parent / "integration" / "data" / "134963_norm.txt"
+DATA_PATH = Path(__file__).parent.parent / "integration" / "data" / "134963.txt"
 
 
 @pytest.mark.parametrize(
