@@ -1,5 +1,5 @@
 """
-Integration tests using La La Land movie review data (134963_norm.txt).
+Integration tests using La La Land movie review data (134963.txt).
 Each line is tab-separated: <review_text>\t<rating>
 """
 
@@ -10,7 +10,7 @@ import pytest
 from krwordrank.sentence import summarize_with_sentences
 from krwordrank.word import KRWordRank, summarize_with_keywords
 
-DATA_PATH = Path(__file__).parent / "data" / "134963_norm.txt"
+DATA_PATH = Path(__file__).parent / "data" / "134963.txt"
 
 EXPECTED_TOP5 = ["영화", "너무", "정말", "음악", "마지막"]
 
