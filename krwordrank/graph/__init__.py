@@ -1,1 +1,1 @@
-from ._rank import hits
+from .rank import hits as hits
