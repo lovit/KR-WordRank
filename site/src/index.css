@@ -1,0 +1,119 @@
+:root {
+  font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background: #fafafa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code {
+  font-family: "JetBrains Mono", "D2Coding", monospace;
+  font-size: 0.9em;
+  background: #e5e7eb;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+
+pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+}
+
+nav {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem 1.5rem;
+}
+
+nav .container {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+nav a {
+  font-weight: 500;
+  color: #374151;
+}
+
+nav a:hover {
+  color: #2563eb;
+}
+
+nav .brand {
+  font-weight: 700;
+  color: #111;
+  margin-right: auto;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin: 2rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+h2 {
+  font-size: 1.35rem;
+  margin: 1.75rem 0 0.75rem;
+}
+
+h3 {
+  font-size: 1.1rem;
+  margin: 1.25rem 0 0.5rem;
+}
+
+p {
+  margin: 0.75rem 0;
+}
+
+ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+section + section {
+  margin-top: 2rem;
+}
+
+.section-block {
+  margin-top: 1.25rem;
+}
