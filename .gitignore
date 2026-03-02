@@ -16,3 +16,6 @@ tmp/
 
 # gitbook
 _book/
+
+# site (React docs)
+site/node_modules/
